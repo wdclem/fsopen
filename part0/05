@@ -1,0 +1,18 @@
+execution Diagram https://studies.cs.helsinki.fi/exampleapp/spa
+
+    BROWSER
+    SERVER
+
+BROWSER GET https://studies.cs.helsinki.fi/exampleapp/spa
+SERVER send HTML DOCUMENTS
+
+BROWSER GET https://studies.cs.helsinki.fi/exampleapp/spa/main.css
+SERVER send CSS DOCUMENTS
+
+BROWSER GET https://studies.cs.helsinki.fi/exampleapp/spa/spa.js
+SERVER send JS code DOCUMENTS
+
+Like for the regular page the js code start to get executed
+
+BROWSER GET https://studies.cs.helsinki.fi/exampleapp/spa/data.json
+SERVER send to the BROWSER all the ul

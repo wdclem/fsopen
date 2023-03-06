@@ -1,0 +1,20 @@
+execution Diagram when user creates a new note
+
+    BROWSER
+    SERVER
+
+BROWSER send the user input to the SERVER.
+BROWSER uses POST request to SERVER adress -> https://studies.cs.helsinki.fi/exempleapp/new_note
+
+SERVER respond with code 302 
+SERVER asks BROWSER to reload by doing url redirect 
+BROWSER make HTTP GET request at the adress of notes
+
+BROSWER request -> 
+    GET main.css; 
+    GET main.js; 
+    GET data.json;
+SERVER post the request using the Javascript code according to the HTML form tag action and method.
+SERVER create a note object in the array notes.
+
+New entry is visible in the browser

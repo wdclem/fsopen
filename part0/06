@@ -1,0 +1,14 @@
+execution Diagram when user creates a new note
+
+    BROWSER
+    SERVER
+
+BROWSER send the user input to the SERVER.
+BROWSER uses POST request SERVER ->https://studies.cs.helsinki.fi/exampleapp/new_note_spa 
+
+SERVER respond with code 201
+the Javascript code is used to fetch the element from the page.
+the event handler creates a new note and adds it to the list of notes.
+the code precise that the data will be sent with POST method 
+
+New entry is visible in the browser
