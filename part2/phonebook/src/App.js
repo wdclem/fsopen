@@ -20,7 +20,7 @@ const App = () => {
   console.log("je t'ai vu")
 
   return (
-    <div>
+    < div >
       <h2>Phonebook</h2>
       <Filter newSearch={newSearch} setNewSearch={setNewSearch} />
       <Form persons={persons}
@@ -29,7 +29,7 @@ const App = () => {
         setPersons={setPersons} />
       <h2>Numbers</h2>
       <Numbers persons={persons} newSearch={newSearch} />
-    </div>
+    </div >
   )
 }
 
@@ -55,7 +55,7 @@ const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPerson
       window.alert(`${newName} is already added to phonebook`)
     }
     else
-      setPersons([...persons, { name: newName }, { number: newNumber }])
+      setPersons([...persons, { name: newName, number: newNumber }])
     setNewName('')
     setNewNumber('')
   }
