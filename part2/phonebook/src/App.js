@@ -12,11 +12,16 @@ const App = () => {
 
   useEffect(() => {
     personService
-      .getAll()
+    .getAll()
+    .then((data) => {
+      setPersons(data);
+    });
+  }, []);
+      /*
       .then(persons => {
         setPersons(persons)
       })
-  }, [persons, setPersons])
+  }, [persons, setPersons])*/
 
   return (
     < div >
@@ -32,13 +37,12 @@ const App = () => {
   )
 }
 
-function delNumber (persons, person, index, setPersons) {
-  //console.log(person, index)
+function delNumber (persons, person, setPersons) {
   if(window.confirm(`Delete ${person.name} ?`)) {
     personService
       .remove(person.id)
       .then(() => {
-        setPersons(persons.filter(person => person.index !== index))
+        setPersons(persons.filter((p) => p.id !== person.id))
       })
     }
 }
@@ -62,28 +66,41 @@ const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPerson
 
   const addNew = (event) => {
     event.preventDefault()
-    const nameExists = persons.some(person => person.name.toLowerCase() === newName.toLowerCase())
+    const nameExists= persons.find(person => person.name.toLowerCase() === newName.toLowerCase())
     if (nameExists) {
-      const confirmed = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one ?`) 
-      if (confirmed){
-       return 
-      }
-
+      if (!window.confirm(`${newName} is already added to phonebook, replace the old number with a new one ?`)){
+        return
+      } 
+      else {
+        const updatedPerson = { ...nameExists, number: newNumber }
+          personService
+          .update(nameExists.id, updatedPerson)
+          .then(returnedPerson => {
+            const updatedPerson = persons.map(person => {
+              if (person.id === returnedPerson.id) {
+                return returnedPerson
+              } 
+              else {
+                return person
+              }
+            })
+          setPersons(updatedPerson)
+          })
+        }
+       
     }
-    else {
+    else{
       const personObject = {
         name: newName,
         number: newNumber
       }
-
       personService
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
-          //setPersons('')
         })
+     }
     }
-  }
   /* event.preventDefault()
    const nameExists = persons.some(person => person.name.toLowerCase() === newName.toLowerCase())
    if (nameExists) {
@@ -111,12 +128,13 @@ const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPerson
 }
 
 const Numbers = ({ persons, newSearch, setPersons }) => {
+  console.log(persons);
   const filteredPersons = persons.filter((person) => person.name.toLowerCase().includes(newSearch.toLowerCase()))
 
   return (
-    filteredPersons.map((person, index) => (
-      <div key={index}>{person.name} {person.number} 
-        <button onClick= {() => delNumber(persons, person, person.id, setPersons)}>delete</button>
+    filteredPersons.map((person) => (
+      <div key={person.id}>{person.name} {person.number} 
+        <button onClick= {() => delNumber(persons, person, setPersons)}>delete</button>
       </div>))
   )
 }
