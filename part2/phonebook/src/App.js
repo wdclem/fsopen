@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
+import React from 'react'
+
+import personService from './services/persons'
 
 
 const App = () => {
@@ -9,15 +11,12 @@ const App = () => {
   const [newSearch, setNewSearch] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        setPersons(response.data)
-        console.log("l'anguille", response.data)
-        console.log("c'est vigousse", persons)
+    personService
+      .getAll()
+      .then(persons => {
+        setPersons(persons)
       })
-  }, [])
-  console.log("je t'ai vu")
+  }, [persons, setPersons])
 
   return (
     < div >
@@ -28,9 +27,20 @@ const App = () => {
         setNewName={setNewName} setNewNumber={setNewNumber}
         setPersons={setPersons} />
       <h2>Numbers</h2>
-      <Numbers persons={persons} newSearch={newSearch} />
+      <Numbers persons={persons} newSearch={newSearch} setPersons={setPersons} />
     </div >
   )
+}
+
+function delNumber (persons, person, index, setPersons) {
+  //console.log(person, index)
+  if(window.confirm(`Delete ${person.name} ?`)) {
+    personService
+      .remove(person.id)
+      .then(() => {
+        setPersons(persons.filter(person => person.index !== index))
+      })
+    }
 }
 
 const Filter = ({ newSearch, setNewSearch }) => {
@@ -48,20 +58,44 @@ const Filter = ({ newSearch, setNewSearch }) => {
 }
 
 const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPersons }) => {
-  const handleSubmit = (event) => {
+  // const handleSubmit = (event) => {
+
+  const addNew = (event) => {
     event.preventDefault()
     const nameExists = persons.some(person => person.name.toLowerCase() === newName.toLowerCase())
     if (nameExists) {
-      window.alert(`${newName} is already added to phonebook`)
+      const confirmed = window.confirm(`${newName} is already added to phonebook, replace the old number with a new one ?`) 
+      if (confirmed){
+       return 
+      }
+
     }
-    else
-      setPersons([...persons, { name: newName, number: newNumber }])
-    setNewName('')
-    setNewNumber('')
+    else {
+      const personObject = {
+        name: newName,
+        number: newNumber
+      }
+
+      personService
+        .create(personObject)
+        .then(returnedPerson => {
+          setPersons(persons.concat(returnedPerson))
+          //setPersons('')
+        })
+    }
   }
+  /* event.preventDefault()
+   const nameExists = persons.some(person => person.name.toLowerCase() === newName.toLowerCase())
+   if (nameExists) {
+     window.alert(`${newName} is already added to phonebook`)
+   }
+   else
+     setPersons([...persons, { name: newName, number: newNumber }])
+   setNewName('')
+   setNewNumber('')*/
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={addNew}>
       <h3>Add a new</h3>
       <div>
         name:<input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} />
@@ -76,12 +110,14 @@ const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPerson
   )
 }
 
-const Numbers = ({ persons, newSearch }) => {
-  const filteredPersons = persons.filter(person => person.name.toLowerCase().includes(newSearch.toLowerCase()))
+const Numbers = ({ persons, newSearch, setPersons }) => {
+  const filteredPersons = persons.filter((person) => person.name.toLowerCase().includes(newSearch.toLowerCase()))
 
   return (
     filteredPersons.map((person, index) => (
-      <div key={index}>{person.name} {person.number}</div>))
+      <div key={index}>{person.name} {person.number} 
+        <button onClick= {() => delNumber(persons, person, person.id, setPersons)}>delete</button>
+      </div>))
   )
 }
 
