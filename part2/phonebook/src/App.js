@@ -17,11 +17,6 @@ const App = () => {
       setPersons(data);
     });
   }, []);
-      /*
-      .then(persons => {
-        setPersons(persons)
-      })
-  }, [persons, setPersons])*/
 
   return (
     < div >
@@ -101,15 +96,6 @@ const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPerson
         })
      }
     }
-  /* event.preventDefault()
-   const nameExists = persons.some(person => person.name.toLowerCase() === newName.toLowerCase())
-   if (nameExists) {
-     window.alert(`${newName} is already added to phonebook`)
-   }
-   else
-     setPersons([...persons, { name: newName, number: newNumber }])
-   setNewName('')
-   setNewNumber('')*/
 
   return (
     <form onSubmit={addNew}>
