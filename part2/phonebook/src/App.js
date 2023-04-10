@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import React from 'react'
+import './index.css'
 
 import personService from './services/persons'
 
@@ -9,6 +10,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [newSearch, setNewSearch] = useState('')
+  const [addMessage, setaddMessage] = useState(null)
+  const [errorMessage, seterrorMessage] = useState(null)
 
   useEffect(() => {
     personService
@@ -20,26 +23,52 @@ const App = () => {
 
   return (
     < div >
-      <h2>Phonebook</h2>
+      <h1>Phonebook</h1>
+      <Notification addmessage={addMessage} errormessage={errorMessage}/>
       <Filter newSearch={newSearch} setNewSearch={setNewSearch} />
       <Form persons={persons}
         newName={newName} newNumber={newNumber}
         setNewName={setNewName} setNewNumber={setNewNumber}
-        setPersons={setPersons} />
+        setPersons={setPersons}
+        addMessage={addMessage}
+        setaddMessage={setaddMessage} />
       <h2>Numbers</h2>
-      <Numbers persons={persons} newSearch={newSearch} setPersons={setPersons} />
+      <Numbers persons={persons} newSearch={newSearch} setPersons={setPersons} seterrorMessage={seterrorMessage} />
     </div >
   )
 }
 
-function delNumber (persons, person, setPersons) {
+const Notification = ({ addmessage, errormessage }) => {
+  if (addmessage === null && errormessage === null) {
+    return null
+  }
+  if (errormessage)
+    return (
+      <div className='error'>
+        {errormessage}
+      </div>
+    ) 
+  if (addmessage)
+    return (
+      <div className='add'>
+        {addmessage}
+      </div>
+    ) 
+}
+
+function delNumber (persons, person, setPersons, seterrorMessage) {
   if(window.confirm(`Delete ${person.name} ?`)) {
     personService
       .remove(person.id)
       .then(() => {
         setPersons(persons.filter((p) => p.id !== person.id))
       })
-    }
+      .catch(error=> {
+        seterrorMessage(`Information of '${person.name} has already been removed from server`)
+        setPersons(persons.filter((p) => p.id !== person.id))
+      })
+      setTimeout(() => {seterrorMessage(null)}, 5000)  
+  }
 }
 
 const Filter = ({ newSearch, setNewSearch }) => {
@@ -56,7 +85,7 @@ const Filter = ({ newSearch, setNewSearch }) => {
   )
 }
 
-const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPersons }) => {
+const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPersons, addMessage, setaddMessage}) => {
   // const handleSubmit = (event) => {
 
   const addNew = (event) => {
@@ -82,7 +111,12 @@ const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPerson
           setPersons(updatedPerson)
           })
         }
-       
+        setaddMessage(
+          `added number change for '${newName}'`
+        )
+        setTimeout(() => {
+          setaddMessage(null)
+        }, 5000)  
     }
     else{
       const personObject = {
@@ -93,6 +127,13 @@ const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPerson
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
+          setaddMessage(
+            `added '${newName}'`
+          )
+          setTimeout(() => {
+            setaddMessage(null)
+          }, 5000)  
+         
         })
      }
     }
@@ -113,14 +154,14 @@ const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPerson
   )
 }
 
-const Numbers = ({ persons, newSearch, setPersons }) => {
+const Numbers = ({ persons, newSearch, setPersons, seterrorMessage }) => {
   console.log(persons);
   const filteredPersons = persons.filter((person) => person.name.toLowerCase().includes(newSearch.toLowerCase()))
 
   return (
     filteredPersons.map((person) => (
       <div key={person.id}>{person.name} {person.number} 
-        <button onClick= {() => delNumber(persons, person, setPersons)}>delete</button>
+        <button onClick= {() => delNumber(persons, person, setPersons, seterrorMessage)}>delete</button>
       </div>))
   )
 }
