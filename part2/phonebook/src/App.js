@@ -30,8 +30,8 @@ const App = () => {
         newName={newName} newNumber={newNumber}
         setNewName={setNewName} setNewNumber={setNewNumber}
         setPersons={setPersons}
-        addMessage={addMessage}
-        setaddMessage={setaddMessage} />
+        setaddMessage={setaddMessage} 
+        seterrorMessage={seterrorMessage}/>
       <h2>Numbers</h2>
       <Numbers persons={persons} newSearch={newSearch} setPersons={setPersons} seterrorMessage={seterrorMessage} />
     </div >
@@ -44,15 +44,11 @@ const Notification = ({ addmessage, errormessage }) => {
   }
   if (errormessage)
     return (
-      <div className='error'>
-        {errormessage}
-      </div>
+      <div className='error'>{errormessage}</div>
     ) 
   if (addmessage)
     return (
-      <div className='add'>
-        {addmessage}
-      </div>
+      <div className='add'>{addmessage}</div>
     ) 
 }
 
@@ -63,12 +59,14 @@ function delNumber (persons, person, setPersons, seterrorMessage) {
       .then(() => {
         setPersons(persons.filter((p) => p.id !== person.id))
       })
-      .catch(error=> {
+      .catch(error => {
         seterrorMessage(`Information of '${person.name} has already been removed from server`)
         setPersons(persons.filter((p) => p.id !== person.id))
+        setTimeout(() => {
+          seterrorMessage(null)
+        }, 5000)  
       })
-      setTimeout(() => {seterrorMessage(null)}, 5000)  
-  }
+    }
 }
 
 const Filter = ({ newSearch, setNewSearch }) => {
@@ -85,8 +83,7 @@ const Filter = ({ newSearch, setNewSearch }) => {
   )
 }
 
-const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPersons, addMessage, setaddMessage}) => {
-  // const handleSubmit = (event) => {
+const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPersons, setaddMessage, seterrorMessage}) => {
 
   const addNew = (event) => {
     event.preventDefault()
@@ -110,10 +107,15 @@ const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPerson
             })
           setPersons(updatedPerson)
           })
+          .catch(error => {
+            seterrorMessage(`Information of '${newName} has already been removed from server`)
+            setPersons(persons.filter((p) => p.id !== nameExists.id))
+            setTimeout(() => {
+              seterrorMessage(null)
+            }, 5000)  
+          })
         }
-        setaddMessage(
-          `added number change for '${newName}'`
-        )
+        setaddMessage(`added number change for '${newName}'`)
         setTimeout(() => {
           setaddMessage(null)
         }, 5000)  
@@ -127,13 +129,8 @@ const Form = ({ persons, newName, newNumber, setNewName, setNewNumber, setPerson
         .create(personObject)
         .then(returnedPerson => {
           setPersons(persons.concat(returnedPerson))
-          setaddMessage(
-            `added '${newName}'`
-          )
-          setTimeout(() => {
-            setaddMessage(null)
-          }, 5000)  
-         
+          setaddMessage(`added '${newName}'`)
+          setTimeout(() => {setaddMessage(null)}, 5000)  
         })
      }
     }

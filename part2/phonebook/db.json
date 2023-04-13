@@ -46,11 +46,6 @@
       "id": 17
     },
     {
-      "name": "test",
-      "number": "123",
-      "id": 20
-    },
-    {
       "name": "Jean la taupe",
       "number": "093872058",
       "id": 21
@@ -66,9 +61,9 @@
       "id": 24
     },
     {
-      "name": "Jean le hibou",
-      "number": "1234325",
-      "id": 25
+      "name": "trest",
+      "number": "",
+      "id": 26
     }
   ]
 }
