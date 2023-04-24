@@ -74,17 +74,20 @@ const Weather = ({capital, country}) => {
       .catch(error => {
         setError('Failed to fetch weather data.');
       })
-  }, []);
-
+  }, [capital, api_key]);
+  console.log("icon", [weather])
   if (error) {
     return <p>{error}</p>;
   } else if (!weather) {
     return <p>Loading weather...</p>;
   } else {
+    const iconWeater = `https://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`
     return (
       <div> 
         <h3>Weather in {capital}</h3>
         <p>Temperature {weather.main.temp}°C</p> 
+        <img src= {iconWeater} />
+        <p>wind {weather.wind.speed}</p> 
       </div>
     );
   }
