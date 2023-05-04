@@ -1,0 +1,13 @@
+services:
+  - name: front
+    dir: front
+    start_command: npm start
+    build_command: npm run build
+    env:
+      NODE_ENV: production
+  - name: back
+    dir: back
+    start_command: npm start
+    build_command: npm run build
+    env:
+      NODE_ENV: production
